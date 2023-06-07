@@ -2,6 +2,10 @@ import re
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import (QApplication, QLabel, QMainWindow, QProgressBar, QPushButton)
 from hash import SETTING, check_algorithm_luna, check_hash
+import multiprocessing as mp
+import sys
+import time
+from chart import charting
 
 
 class Window(QMainWindow):
@@ -10,6 +14,7 @@ class Window(QMainWindow):
         Функция инициализации
         """
         super(Window, self).__init__()
+        self.result_card = None
         self.size = None
         self.setWindowTitle('Поиск банковской карты')
         self.setFixedSize(600, 400)
@@ -61,3 +66,62 @@ class Window(QMainWindow):
         except:
             self.size = 0
         self.button_card.show()
+
+    def preparation(self):
+        """
+        Функция подготовки линии прогресса и списка пула
+        """
+        items = [(i, self.number) for i in range(99999, 10000000)]
+        start = time.time()
+        self.progress.show()
+        QApplication.processEvents()
+        self.progress_bar(start, items)
+
+    def progress_bar(self, start: float, items: list):
+        """
+        Функция отображает прогресс при поиске
+        """
+        with mp.Pool(self.size) as p:
+            for i, result in enumerate(p.starmap(check_hash, items)):
+                if result:
+                    self.success(start, result)
+                    p.terminate()
+                    break
+                self.update_progress_bar(i)
+            else:
+                self.result.setText('Не найдено')
+                self.progress.setValue(0)
+
+    def update_progress_bar(self, i: int):
+        """
+        Функция обновления прогресса
+        """
+        self.progress.setValue(int(i/9900000*100))
+        QApplication.processEvents()
+
+    def success(self, start: float, result: int):
+        """
+        Функция вывода информации о карте
+        """
+        self.result_card = result
+        self.progress.setValue(100)
+        end = time.time() - start
+        result_text = f'Расшифрованный номер: {result}\n'
+        result_text += f'Проверка алгоритма Луна: {check_algorithm_luna(result)}\n'
+        result_text += f'Время: {end:.2f} секунд'
+        self.result.setText(result_text)
+        self.graph.show()
+
+    def show_graph(self):
+        charting(self.result_card)
+
+
+def application():
+    app = QApplication(sys.argv)
+    window = Window()
+    window.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    application()
