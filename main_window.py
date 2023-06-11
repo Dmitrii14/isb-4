@@ -48,6 +48,7 @@ class Window(QMainWindow):
     def on_activated(self, text: str) -> None:
         """
         Функция присвоения номера
+        text - строка для поиска в ней элементов
         """
         self.graph.hide()
         self.pool_size.show()
@@ -60,6 +61,7 @@ class Window(QMainWindow):
     def choose_pool(self, text: str) -> None:
         """
         Функция присвоения размера пула
+        text - строка для поиска в ней элементов
         """
         try:
             self.size = int(re.findall('(\d+)', text)[0])
@@ -67,19 +69,21 @@ class Window(QMainWindow):
             self.size = 0
         self.button_card.show()
 
-    def preparation(self):
+    def preparation(self) -> None:
         """
         Функция подготовки линии прогресса и списка пула
         """
-        items = [(i, self.number) for i in range(99999, 10000000)]
+        items = [(i, self.number) for i in range(1000000)]
         start = time.time()
         self.progress.show()
         QApplication.processEvents()
         self.progress_bar(start, items)
 
-    def progress_bar(self, start: float, items: list):
+    def progress_bar(self, start: float, items: list) -> None:
         """
         Функция отображает прогресс при поиске
+        start - время начала поиска
+        items - элемент прогресса
         """
         with mp.Pool(self.size) as p:
             for i, result in enumerate(p.starmap(check_hash, items)):
@@ -92,16 +96,19 @@ class Window(QMainWindow):
                 self.result.setText('Не найдено')
                 self.progress.setValue(0)
 
-    def update_progress_bar(self, i: int):
+    def update_progress_bar(self, i: int) -> None:
         """
         Функция обновления прогресса
+        i - счетчик
         """
         self.progress.setValue(int(i/9900000*100))
         QApplication.processEvents()
 
-    def success(self, start: float, result: int):
+    def success(self, start: float, result: int) -> None:
         """
         Функция вывода информации о карте
+        start - время начала поиска
+        result - расшифрованный номер карты
         """
         self.result_card = result
         self.progress.setValue(100)
@@ -112,11 +119,11 @@ class Window(QMainWindow):
         self.result.setText(result_text)
         self.graph.show()
 
-    def show_graph(self):
+    def show_graph(self) -> None:
         charting(self.result_card)
 
 
-def application():
+def application() -> None:
     app = QApplication(sys.argv)
     window = Window()
     window.show()
