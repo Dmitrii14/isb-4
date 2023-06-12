@@ -8,7 +8,7 @@ from hash import check_hash
 def charting(card: str) -> None:
     """
     Функция для рисования графика
-    card - номер карты
+    :type card: номер карты
     """
     times = np.empty(shape=0)
     card = card[:6]

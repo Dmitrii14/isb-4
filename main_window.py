@@ -48,7 +48,7 @@ class Window(QMainWindow):
     def on_activated(self, text: str) -> None:
         """
         Функция присвоения номера
-        text - строка для поиска в ней элементов
+        :type text: мы передаем строку для поиска в ней элементов карты
         """
         self.graph.hide()
         self.pool_size.show()
@@ -61,7 +61,7 @@ class Window(QMainWindow):
     def choose_pool(self, text: str) -> None:
         """
         Функция присвоения размера пула
-        text - строка для поиска в ней элементов
+        :type text: мы передаем строку для поиска в ней элементов карты
         """
         try:
             self.size = int(re.findall('(\d+)', text)[0])
@@ -81,9 +81,9 @@ class Window(QMainWindow):
 
     def progress_bar(self, start: float, items: list) -> None:
         """
-        Функция отображает прогресс при поиске
-        start - время начала поиска
-        items - элемент прогресса
+        Функция отображает прогресс при поиска
+        :param items: элемент прогресса поиска
+        :type start: время начала поиска номера карты
         """
         with mp.Pool(self.size) as p:
             for i, result in enumerate(p.starmap(check_hash, items)):
@@ -99,7 +99,7 @@ class Window(QMainWindow):
     def update_progress_bar(self, i: int) -> None:
         """
         Функция обновления прогресса
-        i - счетчик
+        :type i: счетчик
         """
         self.progress.setValue(int(i/9900000*100))
         QApplication.processEvents()
@@ -107,8 +107,8 @@ class Window(QMainWindow):
     def success(self, start: float, result: int) -> None:
         """
         Функция вывода информации о карте
-        start - время начала поиска
-        result - расшифрованный номер карты
+        :param start: время начала поиска
+        :type result: расшифрованный номер карты
         """
         self.result_card = result
         self.progress.setValue(100)
@@ -120,10 +120,16 @@ class Window(QMainWindow):
         self.graph.show()
 
     def show_graph(self) -> None:
+        """
+        Функция отрисовки графика
+        """
         charting(self.result_card)
 
 
 def application() -> None:
+    """
+    Функция активации приложения для поиска
+    """
     app = QApplication(sys.argv)
     window = Window()
     window.show()

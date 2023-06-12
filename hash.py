@@ -9,8 +9,8 @@ logger.setLevel('INFO')
 def check_hash(card_center: int, card_begin: int) -> int:
     """
     Функция проверки совпадения хэша
-    card_center - цифры середины номера карты
-    card_begin - цифры начала номера карты
+    :param card_center: цифры середины номера карты
+    :type card_begin: цифры начала номера карты
     """
     logging.info("Проверка хеша")
     card_number = str(card_begin) + str(card_center) + SETTING['last_digits']
@@ -23,7 +23,7 @@ def check_hash(card_center: int, card_begin: int) -> int:
 def check_algorithm_luna(number: str) -> bool:
     """
     Функция проверки номера карты с использыванием алгоритма Луна
-    number - номер карты
+    :type number: готовый номер карты
     """
     all_number = list(map(int, number))
     all_number = all_number[::-1]
@@ -36,4 +36,4 @@ def check_algorithm_luna(number: str) -> bool:
     total_sum = sum(all_number)
     rem = total_sum % 10
     check_sum = (10 - rem if rem != 0 else 0)
-    return True if check_sum == 7 else False
+    return check_sum == 7

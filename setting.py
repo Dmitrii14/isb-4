@@ -13,6 +13,9 @@ SETTING = {
 
 
 def get_settings() -> None:
+    """
+    Функция открывает файл setting.json для записи в него SETTING
+    """
     with open('setting.json', 'w') as fp:
         json.dump(SETTING, fp)
 
